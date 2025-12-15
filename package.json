@@ -1,0 +1,33 @@
+{
+  "name": "trend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "vite",
+    "start": "vite --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"No tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manasamantripragada-oss/Trend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manasamantripragada-oss/Trend/issues"
+  },
+  "homepage": "https://github.com/manasamantripragada-oss/Trend#readme",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.0"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
+}
