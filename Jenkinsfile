@@ -1,67 +1,39 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME        = "trend-app"
-        DOCKER_IMAGE    = "manasadevi09/trend-app"
-        DOCKER_TAG      = "latest"
-        DOCKER_REGISTRY = "https://index.docker.io/v1/"
-    }
-
-    triggers {
-        githubPush()
-    }
-
     stages {
 
-        stage('Checkout Code') {
+        stage('Sanity Check') {
             steps {
-                checkout scm
+                sh '''
+                  echo "User:"
+                  whoami
+                  echo "Workspace:"
+                  pwd
+                  echo "Files:"
+                  ls -la
+                '''
             }
         }
 
-        stage('Verify Workspace') {
+        stage('Check Tools') {
             steps {
-                sh 'ls -la'
-            }
-        }
-
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    withDockerRegistry(
-                        [url: "${DOCKER_REGISTRY}", credentialsId: 'dockerhub-creds']
-                    ) {
-                        sh """
-                          docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
-                          docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                withCredentials([
-                    file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')
-                ]) {
-                    sh '''
-                      kubectl apply -f deployment.yml
-                      kubectl apply -f service.yml
-                      kubectl rollout status deployment/trend-app
-                    '''
-                }
+                sh '''
+                  echo "Docker:"
+                  docker --version || echo "Docker NOT found"
+                  echo "Kubectl:"
+                  kubectl version --client || echo "Kubectl NOT found"
+                  echo "Node:"
+                  node --version || echo "Node NOT found"
+                  npm --version || echo "NPM NOT found"
+                '''
             }
         }
     }
 
     post {
-        success {
-            echo "✅ CI/CD Pipeline completed successfully!"
-        }
-        failure {
-            echo "❌ Pipeline failed. Check logs."
+        always {
+            echo "Pipeline finished (diagnostic run)"
         }
     }
 }
