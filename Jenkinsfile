@@ -20,7 +20,7 @@ pipeline {
                 ) {
                     sh '''
                       docker build -t manasadevi09/trend-app:latest .
-              docker push manasadevi09/trend-app:latest
+                      docker push manasadevi09/trend-app:latest
                     '''
                 }
             }
