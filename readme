@@ -1,0 +1,233 @@
+# Trend – End-to-End DevOps CI/CD Project (React App on AWS EKS)
+
+This repository demonstrates a **complete, production-grade DevOps implementation** for deploying a React application using **Docker, Jenkins, Terraform, AWS EKS, Kubernetes, and Monitoring tools**. The project reflects all **latest fixes, best practices, and lessons learned** during CI/CD troubleshooting and stabilization.
+
+---
+
+## 📌 Project Overview
+
+* **Application**: Trend (ReactJS)
+* **Application Port**: 3000
+* **Source Repository**: [https://github.com/manasamantripragada-oss/Trend]
+* **Deployment Platform**: AWS EKS
+* **CI/CD Tool**: Jenkins (Declarative Pipeline)
+
+This project automates the full lifecycle:
+
+```
+Code Commit → GitHub → Jenkins CI/CD → DockerHub → AWS EKS → LoadBalancer Access
+```
+
+---
+
+## 🧱 Final Architecture
+
+```
+Developer
+   │
+   ▼
+GitHub (Webhook)
+   │
+   ▼
+Jenkins Pipeline
+    ├── Checkout Code
+    ├── Docker Build
+    ├── Docker Push
+    └── Kubernetes Deploy
+   ▼
+DockerHub Registry
+   │
+   ▼
+AWS EKS Cluster
+   │
+   ▼
+Kubernetes Service (LoadBalancer)
+```
+Grafana and Prometheus for Monitoring
+---
+
+## 🛠 Technology Stack
+
+| Layer            | Tool                  |
+| ---------------- | --------------------- |
+| Frontend         | ReactJS               |
+| Source Control   | GitHub                |
+| CI/CD            | Jenkins (Declarative) |
+| Containerization | Docker                |
+| Registry         | DockerHub             |
+| IaC              | Terraform             |
+| Orchestration    | Kubernetes (EKS)      |
+| Monitoring       | Prometheus & Grafana  |
+| Cloud            | AWS                   |
+
+---
+
+## 📂 Repository Structure (Final)
+
+```
+Trend/
+├── Jenkinsfile
+├── Dockerfile
+├── deployment.yml
+├── service.yml
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   └── eks-module/
+├── src/
+├── public/
+├── .gitignore
+├── .dockerignore
+└── README.md
+```
+
+---
+
+## 🐳 Docker Implementation
+
+### Dockerfile (Production Ready)
+
+* Multi-stage compatible
+* Builds React app inside container
+* Eliminates Node.js dependency on Jenkins agent
+
+```
+
+### Local Validation
+
+```bash
+docker build -t trend-app .
+docker run -p 3000:3000 trend-app
+```
+
+---
+
+## 🔁 Jenkins CI/CD Pipeline (Final & Stable)
+
+### Key Design Decisions
+
+* **Pipeline script from SCM** (not inline)
+* **checkout scm** used correctly
+* Credentials handled securely
+* Docker build performed inside pipeline
+* Kubernetes deploy via kubeconfig
+
+### Jenkinsfile (Declarative)
+Jenkins declarative file for SCM pipeline execution
+
+## 🔐 Jenkins Credentials (Critical)
+
+| Credential ID   | Type              | Purpose                 |
+| --------------- | ----------------- | ----------------------- |
+| dockerhub-creds | Username/Password | Push image to DockerHub |
+| kubeconfig      |                   | Access AWS EKS cluster  |
+
+⚠️ Credentials **must exist in the same job/folder scope** as the pipeline.
+
+---
+
+## ☁️ Terraform – AWS EKS (Module-Based)
+
+* No CLI-based EKS creation
+* Uses official Terraform AWS EKS module
+* Creates VPC, subnets, node groups, IAM roles
+
+### Provisioning
+
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+---
+
+## ☸️ Kubernetes Deployment
+
+### deployment.yml
+
+* 2 replicas
+* Uses DockerHub image
+* Rolling updates enabled
+
+### service.yml
+
+* Type: LoadBalancer
+* Exposes app publicly
+
+```bash
+kubectl apply -f deployment.yml
+kubectl apply -f service.yml
+kubectl get svc trend-service
+
+```
+
+---
+
+## 🌐 Application Access
+
+Once deployed, access the app using:
+
+```
+http://<EXTERNAL-LOADBALANCER-IP>
+```
+
+(ARN/DNS captured as part of submission)
+
+---
+
+## 📊 Monitoring (Bonus Implementation)
+
+### Tools
+
+* Prometheus
+* Grafana
+
+### Installation
+
+```bash
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  --namespace monitoring --create-namespace
+```
+
+### Metrics Observed
+
+* Node CPU & Memory
+* Pod health & restarts
+* Application availability
+
+---
+
+## 📸 Jenkins Screenshots Checklist (Submission Ready)
+
+### Jenkins
+
+* Pipeline configuration (Pipeline script from SCM)
+* Credentials (`dockerhub-creds`, `kubeconfig`)
+* Successful pipeline execution
+* Docker build & push logs
+* Kubernetes rollout logs
+
+### GitHub
+
+* Webhook configuration
+* Commit triggering Jenkins build
+
+### Kubernetes
+
+* LoadBalancer service output
+
+---
+
+## 📦 Final Submission Checklist
+
+*  Full GitHub repository
+*  Jenkinsfile (working)
+*  Dockerfile
+*  Terraform EKS module
+*  Kubernetes manifests
+*  Monitoring setup
+*  Screenshots attached
+
