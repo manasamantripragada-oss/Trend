@@ -1,39 +1,42 @@
 pipeline {
     agent any
 
-    stages {
-
-        stage('Sanity Check') {
-            steps {
-                sh '''
-                  echo "User:"
-                  whoami
-                  echo "Workspace:"
-                  pwd
-                  echo "Files:"
-                  ls -la
-                '''
-            }
-        }
-
-        stage('Check Tools') {
-            steps {
-                sh '''
-                  echo "Docker:"
-                  docker --version || echo "Docker NOT found"
-                  echo "Kubectl:"
-                  kubectl version --client || echo "Kubectl NOT found"
-                  echo "Node:"
-                  node --version || echo "Node NOT found"
-                  npm --version || echo "NPM NOT found"
-                '''
-            }
-        }
+    environment {
+        DOCKER_IMAGE = "manasadevi09/trend-app"
     }
 
-    post {
-        always {
-            echo "Pipeline finished (diagnostic run)"
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                withDockerRegistry(
+                  [credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/']
+                ) {
+                    sh '''
+                      docker build -t $DOCKER_IMAGE:latest .
+                      docker push $DOCKER_IMAGE:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')
+                ]) {
+                    sh '''
+                      kubectl apply -f deployment.yml
+                      kubectl apply -f service.yml
+                    '''
+                }
+            }
         }
     }
 }
