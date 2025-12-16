@@ -1,3 +1,14 @@
-node_modules
-.env
-build
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.crash.log
+terraform.tfvars
+terraform.tfvars.json
+
+# Terraform plan files
+*.tfplan
+
+# OS / tooling
+.DS_Store
+*.exe
